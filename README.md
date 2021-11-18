@@ -12,8 +12,7 @@ do ##class(Paratest.LarEx).Populate(1000)
 do ##class(Paratest.ExtraLarge).Populate(1000)
 ```
 
-Usage
-
+Then aim it at your package of choice using
 ```ObjectScript
-
+do ##class(QueryGenerator.Random).Query("Paratest")
 ```
