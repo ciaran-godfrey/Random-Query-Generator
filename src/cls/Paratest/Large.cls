@@ -1,4 +1,4 @@
-Class Paratest.Medium Extends (%Persistent, %Populate)
+Class Paratest.Large Extends (%Persistent, %Populate)
 {
 
 Property one As %Integer(POPSPEC = ".one()");
@@ -66,7 +66,7 @@ Method cont() As %Integer
 
 Storage Default
 {
-<Data name="MediumDefaultData">
+<Data name="LargeDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
@@ -91,12 +91,15 @@ Storage Default
 <Value name="8">
 <Value>one</Value>
 </Value>
+<Value name="9">
+<Value>cont</Value>
+</Value>
 </Data>
-<DataLocation>^Paratest.MediumD</DataLocation>
-<DefaultData>MediumDefaultData</DefaultData>
-<IdLocation>^Paratest.MediumD</IdLocation>
-<IndexLocation>^Paratest.MediumI</IndexLocation>
-<StreamLocation>^Paratest.MediumS</StreamLocation>
+<DataLocation>^Paratest.LargeD</DataLocation>
+<DefaultData>LargeDefaultData</DefaultData>
+<IdLocation>^Paratest.LargeD</IdLocation>
+<IndexLocation>^Paratest.LargeI</IndexLocation>
+<StreamLocation>^Paratest.LargeS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
 

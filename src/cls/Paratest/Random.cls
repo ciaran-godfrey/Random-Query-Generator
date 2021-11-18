@@ -1,23 +1,28 @@
 Include %occFunctions
 
-Class Paratest.Random {
-    ///Generate Random SQL query
+Class Paratest.Random
+{
 
-    //tables = number of streams
-    //tables(stream name) = number of fields in table
-    //tables(stream name, field name) = 1
+// tables = number of streams
 
-    ///Maximum depth of subquerues
-    Parameter MAXDEPTH As %Integer = 3;
+// tables(stream name) = number of fields in table
 
-    ClassMethod Query() {
+// tables(stream name, field name) = 1
+
+/// Generate Random SQL query
+/// Maximum depth of subquerues
+Parameter MAXDEPTH As %Integer = 3;
+
+ClassMethod Query()
+{
         ///Start recuresion (Generate Method) with initial values
         set tables = 0
         set subq = 0
         return ..Generate(.tables,.subq, 1, "base")
-    }
+}
 
-    ClassMethod Generate(ByRef tables, ByRef subq, depth, subqname) {
+ClassMethod Generate(ByRef tables, ByRef subq, depth, subqname)
+{
         //the recursion has 3 pieces to consider
         //1: the new tables in the current subquery of the form "Paratest.<table>" which are used and deleted within the subquery 
         //   these are stored directly in the tables() array
@@ -36,9 +41,10 @@ Class Paratest.Random {
             set orderby = ..GenerateORDERBY(.tables,$l(select,","))
         }
         return select _ from _ where _ groupby _ orderby
-    }
+}
 
-    ClassMethod GenerateSELECT(ByRef tables, ByRef selstrs, name) {
+ClassMethod GenerateSELECT(ByRef tables, ByRef selstrs, name)
+{
         //selstrs holds info about the select list of the current stream. It has the structure of one table from the tables() array
         //and uses the newly created alis names, when processing of this subquery is complete it will be merged into tables() to be passed upstream
         set selstrs(name) = 0
@@ -115,9 +121,10 @@ Class Paratest.Random {
             set selind = selind + 1
         }
         return select
-    }
+}
 
-    ClassMethod GenerateFROM(ByRef tables, ByRef subq, depth, subqname) {
+ClassMethod GenerateFROM(ByRef tables, ByRef subq, depth, subqname)
+{
         set temptables = 0
         set strind = 1
         set from = " FROM "
@@ -190,9 +197,10 @@ Class Paratest.Random {
             }
         }
         return from
-    }
+}
 
-    ClassMethod GenerateWHERE(ByRef tables, ByRef selstrs, subqname) {
+ClassMethod GenerateWHERE(ByRef tables, ByRef selstrs, subqname)
+{
         set where = " WHERE "
         //add "=" conditions
         set numconds = $$$PRand(5)
@@ -293,9 +301,10 @@ Class Paratest.Random {
         merge tables = selstrs
         set tables = tables + 1
         return where
-    }
+}
 
-    ClassMethod GenerateGROUPBY(ByRef tables,sellen) {
+ClassMethod GenerateGROUPBY(ByRef tables, sellen)
+{
         set groupby = ""
         set numfields = $s(sellen>2:$$$PRand(3),1:sellen)
         if (numfields '= 0) {
@@ -307,9 +316,10 @@ Class Paratest.Random {
             set groupby = $ZSTRIP(groupby,">P")
         }
         return groupby
-    }
+}
 
-    ClassMethod GenerateORDERBY(ByRef tables,sellen) {
+ClassMethod GenerateORDERBY(ByRef tables, sellen)
+{
         set orderby = ""
         set numfields = $s(sellen>2:$$$PRand(3),1:$$$PRand(sellen+1))
         if (numfields '= 0) {
@@ -325,9 +335,10 @@ Class Paratest.Random {
             set orderby = $ZSTRIP(orderby,">P")
         }
         return orderby
-    }
+}
 
-    ClassMethod PickTables(ByRef tables, ByRef subq, depth) {
+ClassMethod PickTables(ByRef tables, ByRef subq, depth)
+{
         set empty = 1
         set names(1) = "Paratest.Small"
         set names(2) = "Paratest.SmMed"
@@ -361,9 +372,10 @@ Class Paratest.Random {
             do ..PickFields(.fields)
             merge tables(names($$$PRand(7)+1)) = fields
         }
-    }
+}
 
-    ClassMethod PickFields(Output fields) {
+ClassMethod PickFields(Output fields)
+{
         set empty = 1
         set names(1) = "one"
         set names(2) = "five"
@@ -384,9 +396,10 @@ Class Paratest.Random {
             set fields = 1
             set fields(names($$$PRand(8)+1)) = 1 
         }
-    }
+}
 
-    ClassMethod ShuffleTables(ByRef tables) {
+ClassMethod ShuffleTables(ByRef tables)
+{
         set shuffled = ..Shuffle(tables)
         set tablist = ""
         set tab = ""
@@ -395,9 +408,10 @@ Class Paratest.Random {
             set $list(tablist,$list(shuffled,i)) = tab
         }
         return tablist
-    }
+}
 
-    ClassMethod Shuffle(length) {
+ClassMethod Shuffle(length)
+{
         set shuffled = ""
         for i=1:1:length {
             set shuffled = shuffled _ $lb(i)
@@ -409,5 +423,6 @@ Class Paratest.Random {
             set $list(shuffled,i) = temp
         }
         return shuffled
-    }
+}
+
 }
