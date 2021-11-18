@@ -13,29 +13,32 @@ Class QueryGenerator.Random
 /// Maximum depth of subquerues
 Parameter MAXDEPTH As %Integer = 3;
 
-ClassMethod Query()
+/// Returns a random query for the tables in the supplied schema, excluding
+/// tables and fields specified through <var>exclude</var>
+/// 
+ClassMethod Query(schema As %String = "Paratest", ByRef exclude) As %String
 {
-        ///Start recuresion (Generate Method) with initial values
-        set tables = 0
-        set subq = 0
-        return ..Generate(.tables,.subq, 1, "base")
+    /// Start recursion (Generate Method) with initial values
+    set tables = 0
+    set subq = 0
+    return ..Generate(.tables, .subq, 1, "base", schema, .exclude)
 }
 
-ClassMethod Generate(ByRef tables, ByRef subq, depth, subqname)
+ClassMethod Generate(ByRef tables, ByRef subq, depth As %Integer, subqname As %String, schema As %String, ByRef exclude)
 {
         //the recursion has 3 pieces to consider
         //1: the new tables in the current subquery of the form "Paratest.<table>" which are used and deleted within the subquery 
         //   these are stored directly in the tables() array
-        //2: the select list of the currentl subquery which provides the fields for upstream subquerys, these are aliased and stored
+        //2: the select list of the current subquery which provides the fields for upstream subquerys, these are aliased and stored
         //   in selstrs() before being merged into tables() when the processing of the subquery is complete
         //3: all the selected fields from downstream subqueries. These are returned by recursive calls and stored in temptables() 
         //   momentarily before being merged into tables()
         set selstrs = 0
-        do ..PickTables(.tables,.subq, depth)
-        set select = ..GenerateSELECT(.tables,.selstrs,subqname)
-        set from = ..GenerateFROM(.tables, .subq, depth, subqname)
+        do ..PickTables(.tables, .subq, depth, schema, .exclude)
+        set select = ..GenerateSELECT(.tables, .selstrs, subqname)
+        set from = ..GenerateFROM(.tables, .subq, depth, subqname, schema, .exclude)
         set where = ..GenerateWHERE(.tables, .selstrs, subqname)
-        set groupby = ..GenerateGROUPBY(.tables,$l(select,","))
+        set groupby = ..GenerateGROUPBY(.tables, $l(select,","))
         set orderby = ""
         if ((select["TOP") || (depth = 1)) {
             set orderby = ..GenerateORDERBY(.tables,$l(select,","))
@@ -46,7 +49,7 @@ ClassMethod Generate(ByRef tables, ByRef subq, depth, subqname)
 ClassMethod GenerateSELECT(ByRef tables, ByRef selstrs, name)
 {
         //selstrs holds info about the select list of the current stream. It has the structure of one table from the tables() array
-        //and uses the newly created alis names, when processing of this subquery is complete it will be merged into tables() to be passed upstream
+        //and uses the newly created alias names, when processing of this subquery is complete it will be merged into tables() to be passed upstream
         set selstrs(name) = 0
         set selstrs = selstrs + 1
         set selind = 1
@@ -123,7 +126,7 @@ ClassMethod GenerateSELECT(ByRef tables, ByRef selstrs, name)
         return select
 }
 
-ClassMethod GenerateFROM(ByRef tables, ByRef subq, depth, subqname)
+ClassMethod GenerateFROM(ByRef tables, ByRef subq, depth, subqname, schema, ByRef exclude)
 {
         set temptables = 0
         set strind = 1
@@ -137,7 +140,7 @@ ClassMethod GenerateFROM(ByRef tables, ByRef subq, depth, subqname)
                 kill newsubq
                 set subtables = 0
                 set newsubq = subq
-                set text = ..Generate(.subtables,.newsubq, depth+1, name)
+                set text = ..Generate(.subtables,.newsubq, depth+1, name, schema, .exclude)
                 set subq = newsubq
                 merge temptables = subtables
                 set tables(name) = 1
@@ -337,23 +340,24 @@ ClassMethod GenerateORDERBY(ByRef tables, sellen)
         return orderby
 }
 
-ClassMethod PickTables(ByRef tables, ByRef subq, depth)
+ClassMethod PickTables(ByRef tables, ByRef subq, depth, schema, ByRef exclude)
 {
         set empty = 1
-        set names(1) = "Paratest.Small"
-        set names(2) = "Paratest.SmMed"
-        set names(3) = "Paratest.Medium"
-        set names(4) = "Paratest.MedLar"
-        set names(5) = "Paratest.Large"
-        set names(6) = "Paratest.LarEx"
-        set names(7) = "Paratest.ExtraLarge"
-        for i = 1:1:7 {
+
+        set rs = ##class(%SQL.Statement).%ExecDirect(,"SELECT TABLE_SCHEMA || '.' || TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ?", schema)
+        set i = 0
+        while rs.%Next() {
+            continue:'$g(exclude(rs.%GetData(1)),1)
+            set names($i(names)) = rs.%GetData(1)
+        }
+
+        for i = 1:1:names {
             if ($$$PRand(3)=2) { 
                 set empty = 0
                 set tables = tables + 1
                 kill fields
                 set fields = 0
-                do ..PickFields(.fields)
+                do ..PickFields(schema, names(i), .fields)
                 merge tables(names(i)) = fields
             }
         }
@@ -369,23 +373,23 @@ ClassMethod PickTables(ByRef tables, ByRef subq, depth)
             kill fields 
             set tables = 1
             set fields = 0
-            do ..PickFields(.fields)
-            merge tables(names($$$PRand(7)+1)) = fields
+            do ..PickFields(schema, names($$$PRand(names)+1), .fields)
+            merge tables(names($$$PRand(names)+1)) = fields
         }
 }
 
-ClassMethod PickFields(Output fields)
+ClassMethod PickFields(schema, table, Output fields)
 {
         set empty = 1
-        set names(1) = "one"
-        set names(2) = "five"
-        set names(3) = "ten"
-        set names(4) = "twenty"
-        set names(5) = "thirty"
-        set names(6) = "forty"
-        set names(7) = "fifty"
-        set names(8) = "cont"
-        for i = 1:1:8 {
+
+        set rs = ##class(%SQL.Statement).%ExecDirect(,"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = $PIECE(?,'.',2)", schema, table)
+        set i = 0
+        while rs.%Next() {
+            continue:'$g(exclude(table, rs.%GetData(1)),1)
+            set names($i(names)) = rs.%GetData(1)
+        }
+        
+        for i = 1:1:names {
             if $$$PRand(2) { 
                 set empty = 0
                 set fields = fields + 1
@@ -394,7 +398,7 @@ ClassMethod PickFields(Output fields)
         }
         if empty {
             set fields = 1
-            set fields(names($$$PRand(8)+1)) = 1 
+            set fields(names($$$PRand(names)+1)) = 1 
         }
 }
 
