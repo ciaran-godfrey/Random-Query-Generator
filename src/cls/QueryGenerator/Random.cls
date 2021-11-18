@@ -1,6 +1,6 @@
 Include %occFunctions
 
-Class Paratest.Random
+Class QueryGenerator.Random
 {
 
 // tables = number of streams
