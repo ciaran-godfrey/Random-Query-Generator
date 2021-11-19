@@ -1,4 +1,4 @@
-Class Paratest.SmMed Extends (%Persistent, %Populate)
+Class Paratest.Small Extends (%Persistent, %Populate)
 {
 
 Property one As %Integer(POPSPEC = ".one()");
@@ -66,37 +66,40 @@ Method cont() As %Integer
 
 Storage Default
 {
-<Data name="SmMedDefaultData">
+<Data name="SmallDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>one</Value>
-</Value>
-<Value name="3">
 <Value>five</Value>
 </Value>
-<Value name="4">
+<Value name="3">
 <Value>ten</Value>
 </Value>
-<Value name="5">
+<Value name="4">
 <Value>twenty</Value>
 </Value>
-<Value name="6">
+<Value name="5">
 <Value>thirty</Value>
 </Value>
-<Value name="7">
+<Value name="6">
 <Value>forty</Value>
 </Value>
-<Value name="8">
+<Value name="7">
 <Value>fifty</Value>
 </Value>
+<Value name="8">
+<Value>one</Value>
+</Value>
+<Value name="9">
+<Value>cont</Value>
+</Value>
 </Data>
-<DataLocation>^Paratest.SmMedD</DataLocation>
-<DefaultData>SmMedDefaultData</DefaultData>
-<IdLocation>^Paratest.SmMedD</IdLocation>
-<IndexLocation>^Paratest.SmMedI</IndexLocation>
-<StreamLocation>^Paratest.SmMedS</StreamLocation>
+<DataLocation>^Paratest.SmallD</DataLocation>
+<DefaultData>SmallDefaultData</DefaultData>
+<IdLocation>^Paratest.SmallD</IdLocation>
+<IndexLocation>^Paratest.SmallI</IndexLocation>
+<StreamLocation>^Paratest.SmallS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
 

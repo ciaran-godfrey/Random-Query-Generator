@@ -1,4 +1,4 @@
-Class Paratest.MedLar Extends (%Persistent, %Populate)
+Class Paratest.ExtraLarge Extends (%Persistent, %Populate)
 {
 
 Property one As %Integer(POPSPEC = ".one()");
@@ -66,37 +66,40 @@ Method cont() As %Integer
 
 Storage Default
 {
-<Data name="MedLarDefaultData">
+<Data name="ExtraLargeDefaultData">
 <Value name="1">
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>one</Value>
-</Value>
-<Value name="3">
 <Value>five</Value>
 </Value>
-<Value name="4">
+<Value name="3">
 <Value>ten</Value>
 </Value>
-<Value name="5">
+<Value name="4">
 <Value>twenty</Value>
 </Value>
-<Value name="6">
+<Value name="5">
 <Value>thirty</Value>
 </Value>
-<Value name="7">
+<Value name="6">
 <Value>forty</Value>
 </Value>
-<Value name="8">
+<Value name="7">
 <Value>fifty</Value>
 </Value>
+<Value name="8">
+<Value>one</Value>
+</Value>
+<Value name="9">
+<Value>cont</Value>
+</Value>
 </Data>
-<DataLocation>^Paratest.MedLarD</DataLocation>
-<DefaultData>MedLarDefaultData</DefaultData>
-<IdLocation>^Paratest.MedLarD</IdLocation>
-<IndexLocation>^Paratest.MedLarI</IndexLocation>
-<StreamLocation>^Paratest.MedLarS</StreamLocation>
+<DataLocation>^Paratest.ExtraLargeD</DataLocation>
+<DefaultData>ExtraLargeDefaultData</DefaultData>
+<IdLocation>^Paratest.ExtraLargeD</IdLocation>
+<IndexLocation>^Paratest.ExtraLargeI</IndexLocation>
+<StreamLocation>^Paratest.ExtraLargeS</StreamLocation>
 <Type>%Storage.Persistent</Type>
 }
 

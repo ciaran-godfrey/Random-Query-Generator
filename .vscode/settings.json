@@ -1,0 +1,8 @@
+{
+    "objectscript.conn": {
+        "server": "iris",
+        "ns": "USER",
+        "active": true
+    },
+    "objectscript.export.addCategory": true
+}

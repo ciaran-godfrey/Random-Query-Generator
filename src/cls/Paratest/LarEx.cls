@@ -91,6 +91,9 @@ Storage Default
 <Value name="8">
 <Value>fifty</Value>
 </Value>
+<Value name="9">
+<Value>cont</Value>
+</Value>
 </Data>
 <DataLocation>^Paratest.LarExD</DataLocation>
 <DefaultData>LarExDefaultData</DefaultData>
